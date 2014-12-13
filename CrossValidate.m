@@ -27,7 +27,6 @@ function [ rmse ] = CrossValidate( X, y, fPredict, nFolds, indicator=ones(size(y
         e = yHat - yTest;
         rmse(i+1) = sqrt(1/size(yTest, 1) * e'*e);
 
-
         %%%%%%%%%%%%%%%%%%%%%%
         %% Plotting stuff
         %%%%%%%%%%%%%%%%%%%%%%

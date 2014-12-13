@@ -1,8 +1,8 @@
-function [ ] = AFMplot( S, Q, Opp, y)
+function [ ] = AFMplot( S, Q, Opp, y, lambda=0)
     X = [S Q Opp];
     O1 = Opp + Q;
-    yh1 = AFMpredict( X, y, X, size(S,2), size(Q,2), 0.0);
-    yh2 = AFMSpredict( X, y, X, size(S,2), size(Q,2), 0.0);
+    yh1 = AFMpredict( X, y, X, size(S,2), size(Q,2), lambda);
+    yh2 = AFMSpredict( X, y, X, size(S,2), size(Q,2), lambda);
 
     % plot the overall curve
     m = max(O1(:));

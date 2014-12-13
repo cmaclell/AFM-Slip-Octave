@@ -19,6 +19,8 @@ function [ w, sw, li ] = AFMSnewtonDescent( f, fgrad, fhess, w0, sw0, step0, nit
         swhinv = pinv(swh);
 
         w1 = w - step * whinv * wg;
+        w1 = max(-15, w1);
+        w1 = min(15, w1);
         w1(1+nStu+nKC:nStu+nKC+nKC) = max(0, w1(1+nStu+nKC:nStu+nKC+nKC));
         sw1 = sw - step * swhinv * swg;
         sw1 = max(-15, sw1);
@@ -28,6 +30,8 @@ function [ w, sw, li ] = AFMSnewtonDescent( f, fgrad, fhess, w0, sw0, step0, nit
         while (fw1 < fw0)
             step = alpha * step;
             w1 = w - step * whinv * wg;
+            w1 = max(-15, w1);
+            w1 = min(15, w1);
             w1(1+nStu+nKC:nStu+nKC+nKC) = max(0, w1(1+nStu+nKC:nStu+nKC+nKC));
             sw1 = sw - step * swhinv * swg;
             sw1 = max(-15, sw1);

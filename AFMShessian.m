@@ -1,17 +1,8 @@
 function [ whessian, shessian ] = AFMShessian( X, y, w, Q, sw, lambda=0.0)
-    % iterative loop
-    %f = size(X,2);
-    %hessian = zeros(f,f);
-    %numX = size(X,1);
-
-    %for i = 1:numX
-    %    p = AFMprob(X(i, :), w)(:,2);
-    %    %hessian -= X(i, :)' * X(i, :);
-    %    hessian -= X(i,:)' * X(i,:) * p * (1 - p);
-    %end
 
     %Vectorized version
     p = AFMSprob(X, w, Q, sw)(:, 2);
+
     wm = ((1 - p) .* (exp(X*w) .* (p - y) - p) - p .* (p - y)) ./ ((1 +
     exp(X*w)).^2 .* (1 - p).^2);
     whessian = X' * diag(wm) * X;
@@ -21,7 +12,16 @@ function [ whessian, shessian ] = AFMShessian( X, y, w, Q, sw, lambda=0.0)
     shessian = Q' * diag(swm) * Q;
 
     if (lambda > 0)
-        nStu = size(X,2) - 2*size(Q,2);
-        whessian(1:nStu) -= lambda;
+        % Regularize Student Intercepts
+        % TODO (adjust the size(Q) based on bias term)
+        nStu = size(X,2) - 2*(size(Q,2)-1);
+        whessian(1:nStu, 1:nStu) -= lambda * eye(nStu);
+
+        % Regularize all but intercept
+        %whessian(1:size(w,1)-1, 1:size(w,1)-1) -= lambda * eye(size(w,1)-1);
+
+        % Regularize slips
+        shessian(1:size(sw,1)-1, 1:size(sw,1)-1) -= lambda * eye(size(sw,1)-1);
     end
+
 end

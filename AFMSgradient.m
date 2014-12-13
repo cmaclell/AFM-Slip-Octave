@@ -7,18 +7,14 @@ function [ wgrad, swgrad ] = AFMSgradient( X, y, w, Q, sw, lambda=0.0)
     swgrad = Q' * ((y - p) ./ ((1 + exp(Q*sw)) .* (1 - p)));
 
     % regularize student intercepts
-    nStu = size(X,2) - 2*size(Q,2);
+    % TODO (adjust the size(Q) based on bias term)
+    nStu = size(X,2) - 2*(size(Q,2)-1);
     wgrad(1:nStu) -= lambda * w(1:nStu);
 
-    % Regularize KC slopes
-    %nStu = size(X,2) - 2*size(Q,2);
-    %nKC = size(Q,2);
-    %wgrad(nStu+nKC+1:nStu+nKC+nKC) -= lambda * w(nStu+nKC+1:nStu+nKC+nKC);
+    % Regularize all but intercept
+    %wgrad(1:size(w,1)-1) -= lambda * w(1:size(w,1)-1);
 
-    % regularize weights
-    wgrad(1:size(w,1)-1) -= lambda * w(1:size(w,1)-1);
-
-    % regularize slips
-    %swgrad -= lambda * sw;
+    % Regularize slips
+    swgrad(1:size(sw,1)-1) -= lambda * sw(1:size(sw,1)-1);
 
 end

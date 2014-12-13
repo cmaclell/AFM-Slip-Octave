@@ -13,16 +13,16 @@ p = dlmread("pmatrix.tdt", '\t');
 p = p(2:size(p,1),:);
 
 % Remove rows for students or kcs with only 1 obs.
-[S, Q, Opp, y] = RemoveSingular( S, Q, Opp, y);
+[S, Q, Opp, y, p] = RemoveSingular( S, Q, Opp, y, p);
 
 % Can be added to X to have an intercept, however.. it might cause problems in
 % regularization...
-int = zeros(size(S,1),1);
+int = ones(size(S,1),1);
 
-X = [S Q Opp int];
+X = [S Q Opp];
 
 nFolds = 3; 
-runs = 10;
+runs = 40;
 
 printf('# obs = %i\n', size(X,1))
 printf('# folds = %i\n', nFolds)
@@ -31,7 +31,8 @@ printf('\n');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % AFM
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-lambda = 0
+
+lambda = 1.0;
 
 w = zeros(size(X,2),1);
 f = @(x) AFMlogLikelihood(X, y, x, size(S,2), lambda);
@@ -57,24 +58,27 @@ for i = 1:runs
     afmISCV(i) = CrossValidate(X, y, fpredict, nFolds, p);
 end
 
-mean(afmCV)
-mean(afmSSCV)
-mean(afmISCV)
+afmUnstratified = mean(afmCV)
+afmStudentStrat = mean(afmSSCV)
+afmItemStrat = mean(afmISCV)
 
 afmw = w;
-
 printf('\n')
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% AFMS
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-lambda = 0.0;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% AFMS
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+lambda = 1;
+
+%newQ = Q;
+newQ = [Q int];
 
 w = zeros(size(X,2),1);
-sw = zeros(size(Q,2),1);
-f = @(x, x2) AFMSlogLikelihood(X, y, x, Q, x2, lambda);
-fgrad = @(x, x2) AFMSgradient(X, y, x, Q, x2, lambda);
-fhess = @(x, x2) AFMShessian(X, y, x, Q, x2);
+sw = zeros(size(newQ,2),1);
+f = @(x, x2) AFMSlogLikelihood(X, y, x, newQ, x2, lambda);
+fgrad = @(x, x2) AFMSgradient(X, y, x, newQ, x2, lambda);
+fhess = @(x, x2) AFMShessian(X, y, x, newQ, x2);
 fpredict = @(x, y, t) AFMSpredict(x, y, t, size(S,2), size(Q,2), lambda);
 ftrain = @(x, x2) AFMSnewtonDescent(f, fgrad, fhess, x, x2, 1, 3000, size(S,2),size(Q,2));
 
@@ -95,12 +99,11 @@ for i = 1:runs
     afmsISCV(i) = CrossValidate(X, y, fpredict, nFolds, p);
 end
 
-mean(afmsCV)
-mean(afmsSSCV)
-mean(afmsISCV)
+afmsUnstratified = mean(afmsCV)
+afmsStudentStrat = mean(afmsSSCV)
+afmsItemStrat= mean(afmsISCV)
 
 afmsw = w;
-
-[afmw afmsw abs(afmw - afmsw)];
+afmssw = sw;
 
 fplot = @() AFMplot(S,Q,Opp,y);
