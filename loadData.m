@@ -22,7 +22,7 @@ int = ones(size(S,1),1);
 X = [S Q Opp];
 
 nFolds = 3; 
-runs = 10;
+runs = 1;
 
 printf('# obs = %i\n', size(X,1))
 printf('# folds = %i\n', nFolds)
@@ -53,9 +53,9 @@ afmISCV = zeros(runs, 1);
 for i = 1:runs
     afmCV(i) = CrossValidate(X, y, fpredict, nFolds);
     %afmYSCV(i) = CrossValidate(X, y, fpredict, nFolds, y)
-    afmSSCV(i) = CrossValidate(X, y, fpredict, nFolds, sum(S*diag(1:size(S,2)),2));
+%    afmSSCV(i) = CrossValidate(X, y, fpredict, nFolds, sum(S*diag(1:size(S,2)),2));
     %afmsKCSCV = CrossValidate(X, y, fpredict, nFolds, sum(Q*diag(1:size(Q,2)),2))
-    afmISCV(i) = CrossValidate(X, y, fpredict, nFolds, p);
+%    afmISCV(i) = CrossValidate(X, y, fpredict, nFolds, p);
 end
 
 afmUnstratified = mean(afmCV)
@@ -94,9 +94,9 @@ afmsISCV = zeros(runs, 1);
 for i = 1:runs
     afmsCV(i) = CrossValidate(X, y, fpredict, nFolds);
     %afmsYSCV = CrossValidate(X, y, fpredict, nFolds, y)
-    afmsSSCV(i) = CrossValidate(X, y, fpredict, nFolds, sum(S*diag(1:size(S,2)),2));
+%    afmsSSCV(i) = CrossValidate(X, y, fpredict, nFolds, sum(S*diag(1:size(S,2)),2));
     %afmsKCSCV = CrossValidate(X, y, fpredict, nFolds, sum(Q*diag(1:size(Q,2)),2))
-    afmsISCV(i) = CrossValidate(X, y, fpredict, nFolds, p);
+%    afmsISCV(i) = CrossValidate(X, y, fpredict, nFolds, p);
 end
 
 afmsUnstratified = mean(afmsCV)

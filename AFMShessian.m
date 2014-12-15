@@ -28,9 +28,8 @@ function [ hessian ] = AFMShessian( X, y, w, Q, sw, lambda=0.0)
     % vice versa) 
     offdiagm = ((p .* (y - 1)) ./ ((1 + exp(Q*sw)).^2 .* (1 + exp(X*w)).^2 .* (1
     - p).^2));
-    offsww = Q' * diag(offdiagm) * X;
-    offwsw = X' * diag(offdiagm) * Q;
+    offdiag = Q' * diag(offdiagm) * X;
 
     %hessian = [whessian zeros(size(offwsw)); zeros(size(offsww)) shessian];
-    hessian = [whessian offwsw; offsww shessian];
+    hessian = [whessian offdiag'; offdiag shessian];
 end
