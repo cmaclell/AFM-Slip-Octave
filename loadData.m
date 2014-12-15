@@ -22,7 +22,7 @@ int = ones(size(S,1),1);
 X = [S Q Opp];
 
 nFolds = 3; 
-runs = 1;
+runs = 10;
 
 printf('# obs = %i\n', size(X,1))
 printf('# folds = %i\n', nFolds)
@@ -40,9 +40,6 @@ fgrad = @(x) -AFMgradient(X, y, x, size(S,2), lambda);
 fhess = @(x) -AFMhessian(X, y, x, size(S,2), lambda);
 fpredict = @(x, y, t) AFMpredict(x, y, t, size(S,2), size(Q, 2), lambda);
 ftrain = @(x) sqp(w, {f, fgrad, fhess}, []);
-
-%ftrain = @(x) AFMnewtonDescent(f, fgrad, fhess, x, 1, 3000, size(S,2),size(Q,2));
-%[w, obj, info, iter, nf, lambda] = sqp(w, {f, fgrad, fhess}, [])
 
 [w, li] = ftrain(w);
 printf('# params = %i\n', size(w,1))
@@ -84,16 +81,7 @@ f = @(x) -AFMSlogLikelihood(X, y, x(1:nw), newQ, x(nw+1:nw+nsw), lambda);
 fgrad = @(x) -AFMSgradient(X, y, x(1:nw), newQ, x(nw+1:nw+nsw), lambda);
 fhess = @(x) -AFMShessian(X, y, x(1:nw), newQ, x(nw+1:nw+nsw), lambda);
 ftrain = @(x) sqp(w, {f, fgrad, fhess}, [], [], -realmax, realmax, 500);
-
-%[w, obj, info, iter, nf, lambda] = sqp(w, {f, fgrad, fhess}, [], [], -realmax, realmax, 500)
-
-%w = normrnd(0,0.5,size(X,2), 1);
-%sw = normrnd(0,0.5,size(newQ,2), 1);
-%f = @(x, x2) AFMSlogLikelihood(X, y, x, newQ, x2, lambda);
-%fgrad = @(x, x2) AFMSgradient(X, y, x, newQ, x2, lambda);
-%fhess = @(x, x2) AFMShessian(X, y, x, newQ, x2);
 fpredict = @(x, y, t) AFMSpredict(x, y, t, size(S,2), size(Q,2), lambda);
-%ftrain = @(x, x2) AFMSnewtonDescent(f, fgrad, fhess, x, x2, 1, 3000, size(S,2),size(Q,2));
 
 [w, li, info, iter] = ftrain(w);
 info
