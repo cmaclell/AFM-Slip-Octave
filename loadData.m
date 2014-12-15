@@ -22,7 +22,7 @@ int = ones(size(S,1),1);
 X = [S Q Opp];
 
 nFolds = 3; 
-runs = 40;
+runs = 10;
 
 printf('# obs = %i\n', size(X,1))
 printf('# folds = %i\n', nFolds)

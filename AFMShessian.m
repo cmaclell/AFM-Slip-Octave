@@ -1,4 +1,4 @@
-function [ whessian, shessian ] = AFMShessian( X, y, w, Q, sw, lambda=0.0)
+function [ hessian ] = AFMShessian( X, y, w, Q, sw, lambda=0.0)
 
     %Vectorized version
     p = AFMSprob(X, w, Q, sw)(:, 2);
@@ -24,4 +24,13 @@ function [ whessian, shessian ] = AFMShessian( X, y, w, Q, sw, lambda=0.0)
         shessian(1:size(sw,1)-1, 1:size(sw,1)-1) -= lambda * eye(size(sw,1)-1);
     end
 
+    % Compute the off diagional blocks of the hessian (crossing w with sw and
+    % vice versa) 
+    offdiagm = ((p .* (y - 1)) ./ ((1 + exp(Q*sw)).^2 .* (1 + exp(X*w)).^2 .* (1
+    - p).^2));
+    offsww = Q' * diag(offdiagm) * X;
+    offwsw = X' * diag(offdiagm) * Q;
+
+    %hessian = [whessian zeros(size(offwsw)); zeros(size(offsww)) shessian];
+    hessian = [whessian offwsw; offsww shessian];
 end

@@ -1,4 +1,5 @@
-function [ wgrad, swgrad ] = AFMSgradient( X, y, w, Q, sw, lambda=0.0)
+%function [ wgrad, swgrad ] = AFMSgradient( X, y, w, Q, sw, lambda=0.0)
+function [ grad ] = AFMSgradient( X, y, w, Q, sw, lambda=0.0)
 
     % Vectorized Gradient
     p = AFMSprob(X, w, Q, sw)(:,2);
@@ -16,5 +17,7 @@ function [ wgrad, swgrad ] = AFMSgradient( X, y, w, Q, sw, lambda=0.0)
 
     % Regularize slips
     swgrad(1:size(sw,1)-1) -= lambda * sw(1:size(sw,1)-1);
+
+    grad = [wgrad; swgrad];
 
 end

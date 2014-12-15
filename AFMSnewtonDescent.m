@@ -1,42 +1,38 @@
 function [ w, sw, li ] = AFMSnewtonDescent( f, fgrad, fhess, w0, sw0, step0, niter, nStu, nKC)
 
-    alpha = 0.1;
+    nw = size(w0,1);
+    nsw = size(sw0,1);
     w = w0;
     sw = sw0;
-    li = size(niter,1);
-    n = 1;
     fw1 = f(w, sw);
     fw0 = fw1 + 1;
 
+    amrijo = 0.01;
+    shrink = 0.5;
+    li = size(niter,1);
+    n = 1;
 
-    while (abs(fw0 - fw1) > 0.001 && n < niter)
+    grad = fgrad(w, sw);
+    direction = pinv(hess(w,sw)) * grad;
+    m = direction' * grad
+
+    while (0.5 * m > 10^(-10) && n < niter)
         fw0 = fw1;
-        step = step0;
+        step = step0 / shrink;
+        once = 1;
 
-        [wg, swg] = fgrad(w, sw);
-        [wh, swh] = fhess(w, sw);
-        whinv = pinv(wh);
-        swhinv = pinv(swh);
+        while (once || fw1 - fw0 < amrijo * step * m)
+            once = 0;
+            step = shrink * step;
 
-        w1 = w - step * whinv * wg;
-        w1 = max(-15, w1);
-        w1 = min(15, w1);
-        w1(1+nStu+nKC:nStu+nKC+nKC) = max(0, w1(1+nStu+nKC:nStu+nKC+nKC));
-        sw1 = sw - step * swhinv * swg;
-        sw1 = max(-15, sw1);
-        sw1 = min(15, sw1);
-        fw1 = f(w1, sw1);
+            w1 = w - step * direction(1:nw);
+            %w1(1+nStu+nKC:nStu+nKC+nKC) = max(0, w1(1+nStu+nKC:nStu+nKC+nKC));
+            sw1 = sw - step * direction(nw+1:nw+nsw);
 
-        while (fw1 < fw0)
-            step = alpha * step;
-            w1 = w - step * whinv * wg;
-            w1 = max(-15, w1);
-            w1 = min(15, w1);
-            w1(1+nStu+nKC:nStu+nKC+nKC) = max(0, w1(1+nStu+nKC:nStu+nKC+nKC));
-            sw1 = sw - step * swhinv * swg;
-            sw1 = max(-15, sw1);
-            sw1 = min(15, sw1);
             fw1 = f(w1, sw1);
+            grad = fgrad(w, sw);
+            direction = pinv(hess(w,sw)) * grad;
+            m = direction' * grad;
         end
 
         w = w1;
