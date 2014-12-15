@@ -95,11 +95,13 @@ ftrain = @(x) sqp(w, {f, fgrad, fhess}, [], [], -realmax, realmax, 500);
 fpredict = @(x, y, t) AFMSpredict(x, y, t, size(S,2), size(Q,2), lambda);
 %ftrain = @(x, x2) AFMSnewtonDescent(f, fgrad, fhess, x, x2, 1, 3000, size(S,2),size(Q,2));
 
-[w, li, info, iter] = ftrain(w, sw);
-printf('# params = %i\n', size(w,1) + size(sw,1))
-amfsll = f(w, sw)
-afmsAIC = AIC(size(w,1)+size(sw,1), f(w, sw))
-afmsBIC = BIC(size(X, 1), size(w,1)+size(sw,1), f(w, sw))
+[w, li, info, iter] = ftrain(w);
+info
+iter
+printf('# params = %i\n', size(w,1))
+afmsll = f(w)
+afmsAIC = AIC(size(w,1), afmsll)
+afmsBIC = BIC(size(X, 1), size(w,1), afmsll)
 
 afmsCV = zeros(runs,1);
 afmsSSCV = zeros(runs, 1);
@@ -116,7 +118,7 @@ afmsUnstratified = mean(afmsCV)
 afmsStudentStrat = mean(afmsSSCV)
 afmsItemStrat= mean(afmsISCV)
 
-afmsw = w;
-afmssw = sw;
+afmsw = w(nw+1:nw+nsw);
+afmssw = w(1:nw);
 
-fplot = @() AFMplot(S,Q,Opp,y);
+fplot = @() AFMplot(S,Q,Opp,y,lambda);

@@ -26,7 +26,7 @@ function [ yHat ] = AFMSpredict( XTrain, yTrain, XTest, nStu, nKC, lambda=0.0)
     %step = 1;
     niter = 3000;
 
-    [w] = sqp(w0, {f, fgrad}, [], [], -realmax, realmax, 500);
+    [w] = sqp(w0, {f, fgrad, fhess}, [], [], -realmax, realmax, 500);
     %[w, obj, info, iter, nf, lambda] = sqp([w;sw], {f, fgrad}, [], [], -realmax, realmax, 500);
     %[w, sw] = AFMSnewtonDescent(flogl, fgrad, fhess, w0, sw0, step, niter, nStu, nKC);
 
