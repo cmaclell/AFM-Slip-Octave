@@ -6,10 +6,10 @@ function [ w, sw, li ] = AFMSnewtonDescent( f, fgrad, fhess, w0, sw0, step0, nit
     n = 1;
 
     % Recommended: (0.01, 0.3)
-    amrijo = 0.01;
+    amrijo = 0.3;
 
     % Recommended: (0.1, 0.8)
-    shrink = 0.5;
+    shrink = 0.1;
 
     w = w0;
     sw = sw0;

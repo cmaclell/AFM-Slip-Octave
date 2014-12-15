@@ -34,7 +34,8 @@ printf('\n');
 
 lambda = 1.0;
 
-w = zeros(size(X,2),1);
+w = normrnd(0,0.01,size(X,2), 1);
+%w = zeros(size(X,2),1);
 f = @(x) AFMlogLikelihood(X, y, x, size(S,2), lambda);
 fgrad = @(x) AFMgradient(X, y, x, size(S,2), lambda);
 fhess = @(x) AFMhessian(X, y, x, size(S,2), lambda);
@@ -74,8 +75,10 @@ lambda = 1;
 %newQ = Q;
 newQ = [Q int];
 
-w = zeros(size(X,2),1);
-sw = zeros(size(newQ,2),1);
+%w = zeros(size(X,2),1);
+%sw = zeros(size(newQ,2),1);
+w = normrnd(0,0.01,size(X,2), 1);
+sw = normrnd(0,0.01,size(newQ,2), 1);
 f = @(x, x2) AFMSlogLikelihood(X, y, x, newQ, x2, lambda);
 fgrad = @(x, x2) AFMSgradient(X, y, x, newQ, x2, lambda);
 fhess = @(x, x2) AFMShessian(X, y, x, newQ, x2);
