@@ -15,7 +15,8 @@ function [ w, sw, li ] = AFMSnewtonDescent( f, fgrad, fhess, w0, sw0, step0, nit
     sw = sw0;
     fw1 = f(w, sw);
     grad = fgrad(w, sw);
-    direction = pinv(fhess(w,sw)) * -grad;
+    %direction = pinv(fhess(w,sw)) * -grad;
+    direction = grad;
     m = direction' * grad;
 
     while (0.5 * m > 10^(-3) && n < niter)
@@ -33,7 +34,8 @@ function [ w, sw, li ] = AFMSnewtonDescent( f, fgrad, fhess, w0, sw0, step0, nit
 
             fw1 = f(w1, sw1);
             grad = fgrad(w, sw);
-            direction = pinv(fhess(w,sw)) * -grad;
+            %direction = pinv(fhess(w,sw)) * -grad;
+            direction = grad;
             m = direction' * grad;
         end
 

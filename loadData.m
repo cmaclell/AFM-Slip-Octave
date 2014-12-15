@@ -34,13 +34,15 @@ printf('\n');
 
 lambda = 1.0;
 
-w = normrnd(0,0.01,size(X,2), 1);
-%w = zeros(size(X,2),1);
-f = @(x) AFMlogLikelihood(X, y, x, size(S,2), lambda);
-fgrad = @(x) AFMgradient(X, y, x, size(S,2), lambda);
-fhess = @(x) AFMhessian(X, y, x, size(S,2), lambda);
+w = zeros(size(X,2),1);
+f = @(x) -AFMlogLikelihood(X, y, x, size(S,2), lambda);
+fgrad = @(x) -AFMgradient(X, y, x, size(S,2), lambda);
+fhess = @(x) -AFMhessian(X, y, x, size(S,2), lambda);
 fpredict = @(x, y, t) AFMpredict(x, y, t, size(S,2), size(Q, 2), lambda);
-ftrain = @(x) AFMnewtonDescent(f, fgrad, fhess, x, 1, 3000, size(S,2),size(Q,2));
+ftrain = @(x) sqp(w, {f, fgrad, fhess}, []);
+
+%ftrain = @(x) AFMnewtonDescent(f, fgrad, fhess, x, 1, 3000, size(S,2),size(Q,2));
+%[w, obj, info, iter, nf, lambda] = sqp(w, {f, fgrad, fhess}, [])
 
 [w, li] = ftrain(w);
 printf('# params = %i\n', size(w,1))
@@ -75,15 +77,24 @@ lambda = 1;
 %newQ = Q;
 newQ = [Q int];
 
-%w = zeros(size(X,2),1);
-%sw = zeros(size(newQ,2),1);
-w = normrnd(0,0.01,size(X,2), 1);
-sw = normrnd(0,0.01,size(newQ,2), 1);
+w = zeros(size(X,2),1);
+sw = zeros(size(newQ,2),1);
+nw = size(X,2);
+nsw = size(newQ,2);
+f = @(x) -AFMSlogLikelihood(X, y, x(1:nw), newQ, x(nw+1:nw+nsw), lambda);
+fgrad = @(x) -AFMSgradient(X, y, x(1:nw), newQ, x(nw+1:nw+nsw), lambda);
+fhess = @(x) AFMShessian(X, y, x(1:nw), newQ, x(nw+1:nw+nsw));
+
+[w, obj, info, iter, nf, lambda] = sqp([w;sw], {f, fgrad}, [], [], -realmax, realmax, 500);
+
+w = normrnd(0,0.5,size(X,2), 1);
+sw = normrnd(0,0.5,size(newQ,2), 1);
 f = @(x, x2) AFMSlogLikelihood(X, y, x, newQ, x2, lambda);
 fgrad = @(x, x2) AFMSgradient(X, y, x, newQ, x2, lambda);
 fhess = @(x, x2) AFMShessian(X, y, x, newQ, x2);
 fpredict = @(x, y, t) AFMSpredict(x, y, t, size(S,2), size(Q,2), lambda);
 ftrain = @(x, x2) AFMSnewtonDescent(f, fgrad, fhess, x, x2, 1, 3000, size(S,2),size(Q,2));
+
 
 [w, sw, li] = ftrain(w, sw);
 printf('# params = %i\n', size(w,1) + size(sw,1))
