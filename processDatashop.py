@@ -54,7 +54,8 @@ if __name__ == "__main__":
             stu.append(student)
             allStudents.add(student)
 
-            problem = data[header['Problem Name']] + "##" + data[header['Step Name']]
+            #problem = data[header['Problem Name']] + "##" + data[header['Step Name']]
+            problem = data[header['Step Name']]
             pnames.append(problem)
             allProblems.add(problem)
 
