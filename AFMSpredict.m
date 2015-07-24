@@ -23,8 +23,8 @@ function [ yHat ] = AFMSpredict( XTrain, yTrain, XTest, nStu, nKC, lambda=0.0)
 
     [w] = sqp(w0, {f, fgrad, fhess}, [], [], lb, ub, 500);
 
-    sw = w(nw+1:nw+nsw);
-    w = w(1:nw);
+    sw = w(nw+1:nw+nsw)
+    w = w(1:nw)
 
     yHat = AFMSprob(XTest, w, QTest, sw)(:,2);
     

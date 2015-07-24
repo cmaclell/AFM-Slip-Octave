@@ -5,6 +5,8 @@ S = dlmread("Smatrix.tdt", '\t');
 S = S(2:size(S,1),:);
 Opp = dlmread("Oppmatrix.tdt", '\t');
 Opp = Opp(2:size(Opp,1),:);
+R = dlmread("RIDmatrix.tdt", '\t');
+R = R(2:size(R,1),:);
 
 y = dlmread("ymatrix.tdt", '\t');
 y = y(2:size(y,1),:);
@@ -13,7 +15,7 @@ p = dlmread("pmatrix.tdt", '\t');
 p = p(2:size(p,1),:);
 
 % Remove rows for students or kcs with only 1 obs.
-[S, Q, Opp, y, p] = RemoveSingular( S, Q, Opp, y, p);
+[R, S, Q, Opp, y, p] = RemoveSingular(R, S, Q, Opp, y, p);
 
 % Can be added to X to have an intercept, however.. it might cause problems in
 % regularization...
@@ -22,7 +24,7 @@ int = ones(size(S,1),1);
 X = [S Q Opp];
 
 nFolds = 3; 
-runs = 1;
+runs = 0;
 
 printf('# obs = %i\n', size(X,1))
 printf('# folds = %i\n', nFolds)

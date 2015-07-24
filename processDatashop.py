@@ -22,6 +22,7 @@ if __name__ == "__main__":
         allKCs = set()
         allProblems = set()
 
+        row_ids = []
         stu = []
         qs = []
         opps = []
@@ -54,14 +55,22 @@ if __name__ == "__main__":
             stu.append(student)
             allStudents.add(student)
 
-            #problem = data[header['Problem Name']] + "##" + data[header['Step Name']]
-            problem = data[header['Step Name']]
+            problem = data[header['Problem Name']] + "##" + data[header['Step Name']]
+            #problem = data[header['Step Name']]
             pnames.append(problem)
             allProblems.add(problem)
 
+            row_id = data[header['Row']]
+            row_ids.append(row_id)
 
         allStudents = {v: i for i,v in enumerate(allStudents)}
         allKCs = {v: i for i,v in enumerate(allKCs)}
+
+        print("Creating RID Matrix File...")
+        with open("RIDmatrix.tdt", "w") as RIDout:
+            RIDout.write("Row ID\n")
+            RIDout.write("\n".join(row_ids))
+        print("Done.")
         
         print("Creating Q Matrix File...")
         with open("Qmatrix.tdt", 'w') as Qout:
@@ -82,10 +91,24 @@ if __name__ == "__main__":
             #    for k, kc in enumerate(qs[i]):
             #        row[allKCs[kc]] = str(int(v[k]))
                 OPPout.write("\t".join(Opprow) + "\n")
-        print("Done.")
+            print("Done.")
 
         print("Creating S Matrix File...")
+#        with open('Smatrix.mat', 'w') as Sout:
+#            Sout.write("# Created by processDatashop.py\n")
+#            Sout.write("# name: S\n")
+#            Sout.write("# type: sparse matrix\n")
+#            Sout.write("# nnz: " + str(len(stu)-1) + "\n")
+#            Sout.write("# rows: " + str(len(stu)) + "\n")
+#            Sout.write("# columns: " + str(len(allStudents)) + "\n")
+#            output = []
+#            for row, s in enumerate(stu):
+#                output.append([str(row+1), str(allStudents[s]+1), '1'])
+#            output.sort(key=lambda x: int(x[1]))
+#            Sout.write('\n'.join([" ".join(o) for o in output]))
+
         with open("Smatrix.tdt", 'w') as Sout:
+
             Sout.write("\t".join([s for s in allStudents]) + "\n")
             for s in stu:
                 Srow = ["1" if s == s2 else "0" for s2 in allStudents]
